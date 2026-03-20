@@ -4,7 +4,7 @@ from tkinter import messagebox
 import tkinter.ttk as ttk
 
 
-from view import *
+from viewbob import *
 
 
 co0 = "#000000"  # black
@@ -27,7 +27,7 @@ co14 = "#00C300"  # green
 
 janela = Tk()
 janela.title("CopaEnergia")
-janela.geometry("700x510")
+janela.geometry("400x379")
 janela.configure(background=co6)
 janela.resizable(width=FALSE, height=FALSE)
 
@@ -44,7 +44,7 @@ frame_baixo_esquerda.grid(row=3, column=0, pady=1, padx=0, sticky=NSEW)
 
 
 # logo
-app_logo = Label(frame_cima, text="Carretas", width=20, height=1,
+app_logo = Label(frame_cima, text="Bobs", width=20, height=1,
                  padx=0, relief="flat", anchor=NW, font=('Ivy 10 bold'), bg=co3, fg=co1)
 app_logo.place(x=10, y=5)
 
@@ -54,83 +54,74 @@ global tree
 # mostrar carretas
 
 
-def mostrar_carretas():
+def mostrar_bob():
     # criando a treeview para mostrar os dados das carretas
     global tree
-    tabela_carretas = ['Item', 'Frota', 'Placa', 'Capacidade', 'Eixo', 'PTB']
-    lista_carreta = ver_dados()
+    tabela_bob = ['Item', 'Frota', 'Placa', 'PTB']
+    lista_bob = ver_dado_bobs()
     tree = ttk.Treeview(frame_baixo_esquerda, columns=(
-        "Frota", "Placa", "Capacidade", "Eixo", "PTB"), show="headings")
+        "Frota", "Placa", "PTB"), show="headings")
     tree = ttk.Treeview(frame_baixo_esquerda, selectmode="extended",
-                        columns=tabela_carretas, show="headings")
+                        columns=tabela_bob, show="headings")
 
-    # tree.column("Itens", width=50)
     tree.column("Frota", width=100)
     tree.column("Placa", width=100)
-    tree.column("Capacidade", width=120)
-    tree.column("Eixo", width=50)
     tree.column("PTB", width=100)
-   # tree.heading("Itens", text="Itens")
+
     tree.heading("Frota", text="Frota")
     tree.heading("Placa", text="Placa")
-    tree.heading("Capacidade", text="Capacidade")
-    tree.heading("Eixo", text="Eixo")
     tree.heading("PTB", text="PTB")
     tree.place(x=10, y=120)
 
     # vertical scrollbar
     vsb = ttk.Scrollbar(frame_baixo_esquerda,
                         orient="vertical", command=tree.yview)
-    vsb.place(x=511, y=121, height=222)
+    vsb.place(x=361, y=121, height=225)
     tree.configure(yscrollcommand=vsb.set)
     frame_baixo_esquerda.grid_rowconfigure(0, weight=12)
 
-    hd = ["center", "center", "center", "center", "center", "center"]
-    h = [50, 100, 100, 120, 50, 100]
+    hd = ["center", "center", "center", "center"]
+    h = [50, 110, 100, 100]
     n = 0
-    for col in tabela_carretas:
+    for col in tabela_bob:
         tree.heading(col, text=col.title(), anchor=CENTER)
         tree.column(col, width=h[n], anchor=hd[n])
         n += 1
 
-    for item in lista_carreta:
+    for item in lista_bob:
         tree.insert("", "end", values=item)
 
 
-mostrar_carretas()
+mostrar_bob()
 
 # função para adicionar nova carreta--------------------------------------------------------------------
 
 
-def adicionar_carreta():
+def adicionar_bob():
     global tree
     frota = txtfrota.get()
     placa = txtplaca.get().upper()
-    capacidade = txtcapacidade.get()
-    eixo = txteixo.get()
     ptb = txtptb.get()
 
-    lista_adicionar = [frota, placa, capacidade, eixo, ptb]
+    lista_bob = [frota, placa, ptb]
 
-    for item in lista_adicionar:
+    for item in lista_bob:
         if item == "":
             messagebox.showerror(
                 "Erro", "Por favor, preencha todos os campos.")
             return
-    inserir_dados(lista_adicionar)
+    inserir_dados_bob(lista_bob)
 
     messagebox.showinfo("Sucesso", "Carreta adiconada com sucesso!")
 
     txtfrota.delete(0, END)
     txtplaca.delete(0, END)
-    txtcapacidade.delete(0, END)
-    txteixo.delete(0, END)
     txtptb.delete(0, END)
 
     for widget in frame_baixo_esquerda.winfo_children():
         widget.destroy()
 
-    mostrar_carretas()
+    mostrar_bob()
 
 # função atualizar dados---------------------------------------------------------------------------
 
@@ -146,54 +137,45 @@ def atulizar():
 
         txtfrota.delete(0, END)
         txtplaca.delete(0, END)
-        txtcapacidade.delete(0, END)
-        txteixo.delete(0, END)
         txtptb.delete(0, END)
 
         id = int(treev_lista[0])
         txtfrota.insert(0, treev_lista[1])
         txtplaca.insert(0, treev_lista[2])
-        txtcapacidade.insert(0, treev_lista[3])
-        txteixo.insert(0, treev_lista[4])
-        txtptb.insert(0, treev_lista[5])
+        txtptb.insert(0, treev_lista[3])
 
         def update():
             global tree
 
             frota = txtfrota.get()
             placa = txtplaca.get().upper()
-            capacidade = txtcapacidade.get()
-            eixo = txteixo.get()
             ptb = txtptb.get()
 
-            lista_atualizar = [frota, placa, capacidade, eixo, ptb, id]
+            lista_bob = [frota, placa, ptb, id]
 
-            for i in lista_atualizar:
+            for i in lista_bob:
                 if i == "":
                     messagebox.showerror("Erro", "Preencha todos os campos")
                     return
-            update_dados(lista_atualizar)
+            update_dados_bob(lista_bob)
 
             messagebox.showinfo("Sucesso!", "Dados atualizados!")
 
             txtfrota.delete(0, END)
             txtplaca.delete(0, END)
-            txtcapacidade.delete(0, END)
-            txteixo.delete(0, END)
             txtptb.delete(0, END)
 
             btnconfirma.destroy
 
-            mostrar_carretas()
+        mostrar_bob()
 
-        btnconfirma = Button(frame_baixo, command=update, text="Confirma".upper(
-        ), width=10, height=1, bg=co4, fg=co1, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
+        btnconfirma = Button(frame_baixo, command=update, text="Gravar".upper(
+        ), width=8, height=1, bg=co4, fg=co1, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
         btnconfirma.place(x=310, y=80)
 
     except IndexError:
         messagebox.showerror("Erro!", "Selecione um dos dodos da tabela")
 
-   
 
 # funcção deletar dados----------------------------------------------------------------------------------------
 
@@ -206,16 +188,19 @@ def deletar():
         treev_lista = treev_dicionario["values"]
         valor = treev_lista[0]
 
-        deletar_dados([valor])
+        deletar_dados_bob([valor])
 
         messagebox.showinfo("Sucesso!", "Dados deletados com sucesso!")
 
-        mostrar_carretas()
+        mostrar_bob()
 
     except IndexError:
         messagebox.showerror("Erro!", "Selecione um dos dodos da tabela")
 
- 
+
+def quit():
+    janela.quit()
+    janela.destroy()
 
 
 # label itens e textbox
@@ -233,27 +218,15 @@ labelplaca.place(x=80, y=10)
 txtplaca = Entry(frame_baixo, width=10, justify="left", relief="solid")
 txtplaca.place(x=80, y=40)
 
-labelcapacidade = Label(frame_baixo, text="Capacidade".upper(),
-                        height=1, anchor=NW,  font=("Ivy 10 bold"), bg=co0, fg=co1)
-labelcapacidade.place(x=150, y=10)
-txtcapacidade = Entry(frame_baixo, width=14, justify="left", relief="solid")
-txtcapacidade.place(x=150, y=40)
-
-labeleixo = Label(frame_baixo, text="Eixo".upper(), height=1,
-                  anchor=NW,  font=("Ivy 10 bold"), bg=co0, fg=co1)
-labeleixo.place(x=244, y=10)
-txteixo = Entry(frame_baixo, width=10, justify="left", relief="solid")
-txteixo.place(x=244, y=40)
-
 labeptb = Label(frame_baixo, text="PTB".upper(), height=1, anchor=NW,
                 font=("Ivy 10 bold"), bg=co0, fg=co1)
-labeptb.place(x=312, y=10)
+labeptb.place(x=148, y=10)
 txtptb = Entry(frame_baixo, width=10, justify="left", relief="solid")
-txtptb.place(x=312, y=40)
+txtptb.place(x=148, y=40)
 
 # botoes CRUD
 
-btnadiconar = Button(frame_baixo, command=adicionar_carreta, text="Adicionar", width=10,
+btnadiconar = Button(frame_baixo, command=adicionar_bob, text="Adicionar", width=10,
                      height=1, bg=co14, fg=co0, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
 btnadiconar.place(x=10, y=80)
 
@@ -264,7 +237,6 @@ btneditar.place(x=110, y=80)
 btnexcluir = Button(frame_baixo, command=deletar, text="Excluir", width=10, height=1,
                     bg=co11, fg=co1, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
 btnexcluir.place(x=210, y=80)
-
 
 
 janela.mainloop()
