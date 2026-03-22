@@ -5,19 +5,16 @@ from tkinter import *
 from tkinter import ttk, StringVar
 from tkinter import messagebox
 import tkinter.ttk as ttk
-from selenium import *
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException 
 
 
 # from main import mostrar_carretas
 from viewCavalo import *
 from view import *
-
 from viewbob import *
+from viewFilial import *
+from viewindustria import *
+
+
 
 co0 = "#000000"  # black
 co1 = "#feffff"  # whitw
@@ -33,7 +30,6 @@ co10 = "#6e8b3d"  # green
 co11 = "#AF0606"  # RED
 co12 = "#1877F2"  # blue
 co14 = "#00C300"  # green
-
 
 
 app = Tk()
@@ -299,8 +295,7 @@ def carreta():
     def mostrar_carretas():
         # criando a treeview para mostrar os dados das carretas
         global tree
-        tabela_carretas = ['Item', 'Frota',
-                           'Placa', 'Capacidade', 'Eixo', 'PTB']
+        tabela_carretas = ['Item', 'Frota','Placa', 'Capacidade', 'Eixo', 'PTB']
         lista_carreta = ver_dados()
         tree = ttk.Treeview(frame_baixo_esquerda, columns=(
             "Frota", "Placa", "Capacidade", "Eixo", "PTB"), show="headings")
@@ -522,8 +517,8 @@ def bobs():
     frame_baixo_esquerda.grid(row=3, column=0, pady=1, padx=0, sticky=NSEW)
 
     # logo
-    app_logo = Label(frame_cima, text="Bobs", width=20, height=1,
-                     padx=0, relief="flat", anchor=NW, font=('Ivy 10 bold'), bg=co3, fg=co1)
+    app_logo = Label(frame_cima, text="Bobs", width=20, height=1, padx=0,
+                     relief="flat", anchor=NW, font=('Ivy 10 bold'), bg=co3, fg=co1)
     app_logo.place(x=10, y=5)
 
     # entrada de dados
@@ -711,14 +706,402 @@ def bobs():
     janela.mainloop()
 
 
+def centroCusto():
+
+    janela = Tk()
+    janela.title("CopaEnergia")
+    janela.geometry("530x379")
+    janela.configure(background=co6)
+    janela.resizable(width=FALSE, height=FALSE)
+
+    # creating the frames
+    frame_cima = Frame(janela, width=700, height=25, bg=co3, relief="flat")
+    frame_cima.grid(row=0, column=0, sticky=NSEW)
+
+    frame_baixo = Frame(janela, width=700, height=475, bg=co1, relief="flat")
+    frame_baixo.grid(row=1, column=0, pady=1, padx=0, sticky=NSEW)
+
+    frame_baixo_esquerda = Frame(
+        frame_baixo, width=700, height=470, bg=co0, relief="flat")
+    frame_baixo_esquerda.grid(row=3, column=0, pady=1, padx=0, sticky=NSEW)
+
+    # logo
+    app_logo = Label(frame_cima, text="Bobs", width=20, height=1, padx=0,
+                     relief="flat", anchor=NW, font=('Ivy 10 bold'), bg=co3, fg=co1)
+    app_logo.place(x=10, y=5)
+
+    # entrada de dados
+    global tree
+
+    # mostrar carretas
+
+    def mostrar_centro_custo():
+        # criando a treeview para mostrar os dados das carretas
+        global tree
+        tabela_filial = ['Item', 'Codigo', 'Filial']
+        lista_filial = ver_dados_filial()
+        tree = ttk.Treeview(frame_baixo_esquerda, columns=(
+            "Codigo", "Filial"), show="headings")
+        tree = ttk.Treeview(frame_baixo_esquerda, selectmode="extended",
+                            columns=tabela_filial, show="headings")
+
+        tree.column("Codigo", width=100)
+        tree.column("Filial", width=100)
+
+        tree.heading("Codigo", text="Codigo")
+        tree.heading("Filial", text="Filial")
+
+        tree.place(x=10, y=120)
+
+        # vertical scrollbar
+        vsb = ttk.Scrollbar(frame_baixo_esquerda,
+                            orient="vertical", command=tree.yview)
+        vsb.place(x=501, y=121, height=225)
+        tree.configure(yscrollcommand=vsb.set)
+        frame_baixo_esquerda.grid_rowconfigure(0, weight=12)
+
+        hd = ["center", "center", "sw"]
+        h = [50, 150, 300]
+        n = 0
+        for col in tabela_filial:
+            tree.heading(col, text=col.title(), anchor=CENTER)
+            tree.column(col, width=h[n], anchor=hd[n])
+            n += 1
+
+        for item in lista_filial:
+            tree.insert("", "end", values=item)
+
+    mostrar_centro_custo()
+
+    # função para adicionar nova carreta--------------------------------------------------------------------
+
+    def adicionar_centro_custo():
+        global tree
+        codigo = txtcodigo.get()
+        filial = txtfilial.get().upper()
+
+        lista_filial = [codigo, filial]
+
+        for item in lista_filial:
+            if item == "":
+                messagebox.showerror(
+                    "Erro", "Por favor, preencha todos os campos.")
+                return
+        inserir_dados_filial(lista_filial)
+
+        messagebox.showinfo("Sucesso", "Carreta adiconada com sucesso!")
+
+        txtcodigo.delete(0, END)
+        txtfilial.delete(0, END)
+
+        for widget in frame_baixo_esquerda.winfo_children():
+            widget.destroy()
+
+        mostrar_centro_custo()
+
+    # função atualizar dados---------------------------------------------------------------------------
+
+    def atulizar_centro_custo():
+        global tree
+        try:
+            treev_dados = tree.focus()
+            treev_dicionario = tree.item(treev_dados)
+            treev_lista = treev_dicionario["values"]
+
+            valor = treev_lista[0]
+
+            txtcodigo.delete(0, END)
+            txtfilial.delete(0, END)
+
+            id = int(treev_lista[0])
+            txtcodigo.insert(0, treev_lista[1])
+            txtfilial.insert(0, treev_lista[2])
+
+            def update():
+                global tree
+
+                codigo = txtcodigo.get()
+                filial = txtfilial.get().upper()
+
+                lista_filial = [codigo, filial, id]
+
+                for i in lista_filial:
+                    if i == "":
+                        messagebox.showerror(
+                            "Erro", "Preencha todos os campos")
+                        return
+                update_dados_filial(lista_filial)
+
+                messagebox.showinfo("Sucesso!", "Dados atualizados!")
+
+                txtcodigo.delete(0, END)
+                txtfilial.delete(0, END)
+
+                btnconfirma.destroy
+
+                mostrar_centro_custo()
+
+            btnconfirma = Button(frame_baixo, command=update, text="Gravar".upper(
+            ), width=8, height=1, bg=co4, fg=co1, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
+            btnconfirma.place(x=310, y=80)
+
+        except IndexError:
+            messagebox.showerror("Erro!", "Selecione um dos dodos da tabela")
+
+    # funcção deletar dados----------------------------------------------------------------------------------------
+
+    def deletar_centro_custo():
+        global tree
+        try:
+            treev_dados = tree.focus()
+            treev_dicionario = tree.item(treev_dados)
+            treev_lista = treev_dicionario["values"]
+            valor = treev_lista[0]
+
+            deletar_dados_filial([valor])
+
+            messagebox.showinfo("Sucesso!", "Dados deletados com sucesso!")
+
+            mostrar_centro_custo()
+
+        except IndexError:
+            messagebox.showerror("Erro!", "Selecione um dos dodos da tabela")
+
+    def quit():
+        janela.quit()
+        janela.destroy()
+
+    # label itens e textbox
+
+    labelcodigo = Label(frame_baixo, text="Codigo".upper(
+    ), height=1, anchor=NW,  font=("Ivy 10 bold"), bg=co0, fg=co1)
+    labelcodigo.place(x=10, y=10)
+    txtcodigo = Entry(frame_baixo, width=10, justify="left", relief="solid")
+    txtcodigo.place(x=10, y=40)
+
+    labelfilial = Label(frame_baixo, text="Filial".upper(
+    ), height=1, anchor=NW,  font=("Ivy 10 bold"), bg=co0, fg=co1)
+    labelfilial.place(x=80, y=10)
+    txtfilial = Entry(frame_baixo, width=10, justify="left", relief="solid")
+    txtfilial.place(x=80, y=40)
+
+    # botoes CRUD
+
+    btnadiconar = Button(frame_baixo, command=adicionar_centro_custo, text="Adicionar", width=10,
+                         height=1, bg=co14, fg=co0, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
+    btnadiconar.place(x=10, y=80)
+
+    btneditar = Button(frame_baixo, command=atulizar_centro_custo, text="Editar", width=10,
+                       height=1, bg=co12, fg=co1, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
+    btneditar.place(x=110, y=80)
+
+    btnexcluir = Button(frame_baixo, command=deletar_centro_custo, text="Excluir", width=10,
+                        height=1, bg=co11, fg=co1, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
+    btnexcluir.place(x=210, y=80)
+
+
+def industrial():
+
+    janela = Tk()
+    janela.title("CopaEnergia")
+    janela.geometry("530x379")
+    janela.configure(background=co6)
+    janela.resizable(width=FALSE, height=FALSE)
+
+    # creating the frames
+    frame_cima = Frame(janela, width=700, height=25, bg=co3, relief="flat")
+    frame_cima.grid(row=0, column=0, sticky=NSEW)
+
+    frame_baixo = Frame(janela, width=700, height=475, bg=co1, relief="flat")
+    frame_baixo.grid(row=1, column=0, pady=1, padx=0, sticky=NSEW)
+
+    frame_baixo_esquerda = Frame(
+        frame_baixo, width=700, height=470, bg=co0, relief="flat")
+    frame_baixo_esquerda.grid(row=3, column=0, pady=1, padx=0, sticky=NSEW)
+
+    # logo
+    app_logo = Label(frame_cima, text="Bobs", width=20, height=1, padx=0,
+                    relief="flat", anchor=NW, font=('Ivy 10 bold'), bg=co3, fg=co1)
+    app_logo.place(x=10, y=5)
+
+    # entrada de dados
+    global tree
+
+    # mostrar carretas
+
+  
+    def mostrar_industrial():
+        # criando a treeview para mostrar os dados das carretas
+        global tree
+        tabela_industria = ['Item', 'Codigo', 'Industria']
+        lista_industria = ver_dados_industrial()
+        tree = ttk.Treeview(frame_baixo_esquerda, columns=("Codigo", "Industria"), show="headings")
+        tree = ttk.Treeview(frame_baixo_esquerda, selectmode="extended",columns=tabela_industria, show="headings")
+
+        tree.column("Codigo", width=100)
+        tree.column("Industria", width=300)
+
+        tree.heading("Codigo", text="Codigo")
+        tree.heading("Industria", text="Industria")
+
+        tree.place(x=10, y=120)
+
+        # vertical scrollbar
+        vsb = ttk.Scrollbar(frame_baixo_esquerda,orient="vertical", command=tree.yview)
+        vsb.place(x=501, y=121, height=225)
+        tree.configure(yscrollcommand=vsb.set)
+        frame_baixo_esquerda.grid_rowconfigure(0, weight=12)
+
+        hd = ["center", "center", "sw"]
+        h = [50, 150, 300]
+        n = 0
+        for col in tabela_industria:
+            tree.heading(col, text=col.title(), anchor=CENTER)
+            tree.column(col, width=h[n], anchor=hd[n])
+            n += 1
+
+        for item in lista_industria:
+            tree.insert("", "end", values=item)
+
+    mostrar_industrial()
+
+    # função para adicionar nova carreta--------------------------------------------------------------------
+
+    def adicionar_centro_industrial():
+        global tree
+        codigo = txtcodigo.get()
+        filial = txtindustria.get().upper()
+
+        lista_industria = [codigo, filial]
+
+        for item in lista_industria:
+            if item == "":
+                messagebox.showerror(
+                    "Erro", "Por favor, preencha todos os campos.")
+                return
+        inserir_dados_industrial(lista_industria)
+
+        messagebox.showinfo("Sucesso", "Carreta adiconada com sucesso!")
+
+        txtcodigo.delete(0, END)
+        txtindustria.delete(0, END)
+
+        for widget in frame_baixo_esquerda.winfo_children():
+            widget.destroy()
+
+        mostrar_industrial()
+
+    # função atualizar dados---------------------------------------------------------------------------
+
+    def atulizar_centro_industrial():
+        global tree
+        try:
+            treev_dados = tree.focus()
+            treev_dicionario = tree.item(treev_dados)
+            treev_lista = treev_dicionario["values"]
+
+            valor = treev_lista[0]
+
+            txtcodigo.delete(0, END)
+            txtindustria.delete(0, END)
+
+            id = int(treev_lista[0])
+            txtcodigo.insert(0, treev_lista[1])
+            txtindustria.insert(0, treev_lista[2])
+
+            def update():
+                global tree
+
+                codigo = txtcodigo.get()
+                industria = txtindustria.get().upper()
+
+                lista_industria = [codigo, industria, id]
+
+                for i in lista_industria:
+                    if i == "":
+                        messagebox.showerror(
+                            "Erro", "Preencha todos os campos")
+                        return
+                update_dados_industrial(lista_industria)
+
+                messagebox.showinfo("Sucesso!", "Dados atualizados!")
+
+                txtcodigo.delete(0, END)
+                txtindustria.delete(0, END)
+
+                btnconfirma.destroy
+
+                mostrar_industrial()
+
+            btnconfirma = Button(frame_baixo, command=update, text="Gravar".upper(
+            ), width=8, height=1, bg=co4, fg=co1, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
+            btnconfirma.place(x=310, y=80)
+
+        except IndexError:
+            messagebox.showerror("Erro!", "Selecione um dos dodos da tabela")
+
+    # funcção deletar dados----------------------------------------------------------------------------------------
+
+    def deletar_centro_industrial():
+        global tree
+        try:
+            treev_dados = tree.focus()
+            treev_dicionario = tree.item(treev_dados)
+            treev_lista = treev_dicionario["values"]
+            valor = treev_lista[0]
+
+            deletar_dados_industrial([valor])
+
+            messagebox.showinfo("Sucesso!", "Dados deletados com sucesso!")
+
+            mostrar_industrial()
+
+        except IndexError:
+            messagebox.showerror("Erro!", "Selecione um dos dodos da tabela")
+
+    def quit():
+        janela.quit()
+        janela.destroy()
+
+    # label itens e textbox
+
+    labelcodigo = Label(frame_baixo, text="Codigo".upper(), height=1, anchor=NW,  font=("Ivy 10 bold"), bg=co0, fg=co1)
+    labelcodigo.place(x=10, y=10)
+    txtcodigo = Entry(frame_baixo, width=10, justify="left", relief="solid")
+    txtcodigo.place(x=10, y=40)
+
+    labelindustria = Label(frame_baixo, text="Industria".upper(
+    ), height=1, anchor=NW,  font=("Ivy 10 bold"), bg=co0, fg=co1)
+    labelindustria.place(x=80, y=10)
+    txtindustria = Entry(frame_baixo, width=30, justify="left", relief="solid")
+    txtindustria.place(x=80, y=40)
+
+    # botoes CRUD
+
+    btnadiconar = Button(frame_baixo, command=adicionar_centro_industrial, text="Adicionar", width=10,
+                        height=1, bg=co14, fg=co0, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
+    btnadiconar.place(x=10, y=80)
+
+    btneditar = Button(frame_baixo, command=atulizar_centro_industrial, text="Editar", width=10,
+                    height=1, bg=co12, fg=co1, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
+    btneditar.place(x=110, y=80)
+
+    btnexcluir = Button(frame_baixo, command=deletar_centro_industrial, text="Excluir", width=10,
+                        height=1, bg=co11, fg=co1, font=("Ivy 10 bold"), relief="raised", overrelief="ridge")
+    btnexcluir.place(x=210, y=80)
+
+    
+    janela.mainloop()
+
+
 barradeMenu = Menu(app)
 menuArquivo = Menu(barradeMenu, tearoff=0)
 menuArquivo.add_command(label="Carretas", command=carreta)
 menuArquivo.add_command(label="Cavalos", command=cavalo)
 menuArquivo.add_command(label="Bobs", command=bobs)
 menuArquivo.add_command(label="Motorista")
-menuArquivo.add_command(label="Destinos")
-menuArquivo.add_command(label="Centro de Custo")
+menuArquivo.add_command(label="Industrial",command=industrial)
+menuArquivo.add_command(label="Centro de Custo", command=centroCusto)
 menuArquivo.add_separator()
 menuArquivo.add_command(label="Sair", command=app.quit)
 barradeMenu.add_cascade(label="Cadastro", menu=menuArquivo)
