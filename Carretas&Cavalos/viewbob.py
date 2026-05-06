@@ -3,7 +3,7 @@ import sqlite3
 
 # criando a conexão
 # CRUD - create, read, update, delete
-con = sqlite3.connect('bob.bd')
+con = sqlite3.connect('bob.db')
 
 
 

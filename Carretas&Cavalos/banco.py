@@ -3,7 +3,7 @@ import sqlite3
 
 #criando a conexao com o banco de dados
 
-con = sqlite3.connect('veiculos.bd')
+con = sqlite3.connect('carretas.db')
 
 # criando a tabela
 

@@ -3,7 +3,7 @@ import sqlite3
 
 #criando a conexao com o banco de dados
 
-con = sqlite3.connect('industrial.bd')
+con = sqlite3.connect('industrial.db')
 
 # criando a tabela
 

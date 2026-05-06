@@ -92,7 +92,7 @@ def mostrar_bob():
         tree.insert("", "end", values=item)
 
 
-mostrar_bob()
+    mostrar_bob()
 
 # função para adicionar nova carreta--------------------------------------------------------------------
 

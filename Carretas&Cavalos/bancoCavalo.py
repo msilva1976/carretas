@@ -6,7 +6,7 @@ import sqlite3
 
 #CRUD - create, read, update, delete
 
-con = sqlite3.connect('cavalo.bd')
+con = sqlite3.connect('cavalo.db')
 
 #criando a tabela
 

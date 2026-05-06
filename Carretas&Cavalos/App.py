@@ -5,6 +5,10 @@ from tkinter import *
 from tkinter import ttk, StringVar
 from tkinter import messagebox
 import tkinter.ttk as ttk
+import sqlite3
+import customtkinter
+customtkinter.set_appearance_mode("dark")
+
 
 
 # from main import mostrar_carretas
@@ -109,6 +113,7 @@ def cavalo():
             tree.insert("", "end", values=item)
 
     mostrar_cavalos()
+      
 
     # função para adicionar novo cavalo
 
@@ -1107,5 +1112,112 @@ menuArquivo.add_command(label="Sair", command=app.quit)
 barradeMenu.add_cascade(label="Cadastro", menu=menuArquivo)
 app.config(menu=barradeMenu)
 
+def carregar_dados():   
 
+    frota_cavalo = entry_frota_cavalo.get()
+    conexao = sqlite3.connect("cavalo.db")
+    cursor = conexao.cursor()
+    
+    buscar = frota_cavalo
+    comando_sql = "SELECT placa FROM cavalo WHERE frota = ?"
+    cursor.execute(comando_sql, (buscar,))
+    resultado = "".join(cursor.fetchone())
+
+    #Nnome
+
+    buscar = frota_cavalo
+    comando_sql = "SELECT nome FROM cavalo WHERE frota = ?"
+    cursor.execute(comando_sql, (buscar,))
+    nome = "".join(cursor.fetchone())
+
+    # eixo
+
+    buscar = frota_cavalo
+    comando_sql = "SELECT eixo FROM cavalo WHERE frota = ?"
+    cursor.execute(comando_sql, (buscar,))
+    eixo = (cursor.fetchone())
+
+    # ptb
+    buscar = frota_cavalo
+    comando_sql = "SELECT ptb FROM cavalo WHERE frota = ?"  
+    cursor.execute(comando_sql, (buscar,))
+    ptb = (cursor.fetchone())
+
+
+    dados_do_cavalo.configure(text="Placa: {}".format(resultado) + "   |    Nome: {}".format(nome) + "   |    Eixo: {}".format(eixo) + "   |    PTB: {}".format(ptb))
+
+def carregar_carreta():
+    frota_carreta = entry_frota_carreta.get()
+    conexao = sqlite3.connect("carretas.db")
+    cursor = conexao.cursor()
+    
+    buscar = frota_carreta
+    comando_sql = "SELECT placa FROM carreta WHERE frota = ?"
+    cursor.execute(comando_sql, (buscar,))
+    resultado2 = "".join(cursor.fetchone())
+
+    #capacidade
+
+    buscar = frota_carreta
+    comando_sql = "SELECT capacidade FROM carreta WHERE frota = ?"
+    cursor.execute(comando_sql, (buscar,))
+    capacidade = (cursor.fetchone())
+
+    # eixo
+
+    buscar = frota_carreta
+    comando_sql = "SELECT eixo FROM carreta WHERE frota = ?"
+    cursor.execute(comando_sql, (buscar,))
+    eixo2 = (cursor.fetchone())
+
+    # ptb
+    buscar = frota_carreta
+    comando_sql = "SELECT ptb FROM carreta WHERE frota = ?"  
+    cursor.execute(comando_sql, (buscar,))
+    ptb2 = (cursor.fetchone())
+
+
+    dados_da_carreta.configure(text="Placa: {}".format(resultado2) + "   |    Capacidade: {}".format(capacidade) + "   |    Eixo: {}".format(eixo2) + "   |    PTB: {}".format(ptb2))
+     
+                              
+
+    conexao.close()
+
+def comandoscombinados():
+    carregar_dados()
+    carregar_carreta()
+
+#entrada da placa do cavalo
+label_frota_cavalo = customtkinter.CTkLabel(app, text="Frota do Cavalo")
+label_frota_cavalo.place(x=10, y= 15)
+entry_frota_cavalo = customtkinter.CTkEntry(app)
+entry_frota_cavalo.place(x=110, y=9)
+
+#entrada da plca da carreta
+
+label_frota_carreta = customtkinter.CTkLabel(app, text="Frota da Carreta")
+label_frota_carreta.place(x=10, y=60  )   
+entry_frota_carreta = customtkinter.CTkEntry(app)
+entry_frota_carreta.place(x=110, y=60)
+
+
+
+#botão para carregar dados
+botao_carregar = customtkinter.CTkButton(app, text="Carregar Dados", command=comandoscombinados)
+#botao_carregar2 = customtkinter.CTkButton(app, text="Carregar Dados", command=carregar_carreta)
+botao_carregar.place(x=10, y=100)
+#botao_carregar2.place(x=110, y=100)
+
+
+dados_do_cavalo = customtkinter.CTkLabel(app, text="")
+dados_do_cavalo.place(x=10, y=140)
+
+dados_da_carreta = customtkinter.CTkLabel(app, text="")
+dados_da_carreta.place(x=10, y=180)
+
+
+
+
+
+#janela.mainloop()
 app.mainloop()

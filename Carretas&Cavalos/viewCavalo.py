@@ -4,7 +4,7 @@ import  sqlite3
 #crineo conexão
 #CRUD create, read, update, dalete
 
-con = sqlite3.connect('cavalo.bd')
+con = sqlite3.connect('cavalo.db')
 
 #inserino dados na tabela
 #inserio dados dos cavalos
