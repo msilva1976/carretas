@@ -7,6 +7,7 @@ from tkinter import messagebox
 import tkinter.ttk as ttk
 import sqlite3
 import customtkinter
+import customtkinter as ctk
 customtkinter.set_appearance_mode("dark")
 
 
@@ -37,6 +38,7 @@ co14 = "#00C300"  # green
 
 
 app = Tk()
+#app = ctk.CTk()
 app.title("CopaEnergia")
 app.geometry("900x610")
 app.resizable(width=FALSE, height=FALSE)
@@ -1216,8 +1218,18 @@ dados_da_carreta = customtkinter.CTkLabel(app, text="")
 dados_da_carreta.place(x=10, y=180)
 
 
+def combobox_callback(choice):
+    centro_custo = choice
+    ver.configure(text="Centro de Custo: " + str(centro_custo))
+    ver = customtkinter.CTkLabel(app, text="")
+    ver.place(x=10, y=220)
+    messagebox.showinfo("Centro de Custo", f"Você selecionou: {centro_custo}")
+# 3. Criando o CTkComboBox
+combobox = ctk.CTkComboBox(master=app, values=["1005 DAC", "1201 CO"], command=combobox_callback, width=200)
+combobox.pack(pady=20)
 
-
+# Define um valor padrão
+combobox.set("1005 DAC")
 
 #janela.mainloop()
 app.mainloop()
