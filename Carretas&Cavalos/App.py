@@ -1288,22 +1288,22 @@ dados_do_cavalo = customtkinter.CTkLabel(app, text="")
 dados_do_cavalo.place(x=10, y=140)
 
 dados_da_carreta = customtkinter.CTkLabel(app, text="")
-dados_da_carreta.place(x=10, y=180)
+dados_da_carreta.place(x=10, y=160)
 
 nome_motorista = customtkinter.CTkLabel(app, text="")
-nome_motorista.place(x=10, y=220)
+nome_motorista.place(x=10, y=180)
 
 capacidade_carreta = customtkinter.CTkLabel(app, text="")
-capacidade_carreta.place(x=10, y=260)
+capacidade_carreta.place(x=10, y=200)
 
 label_resultado_eixo = customtkinter.CTkLabel(app, text="")
-label_resultado_eixo.place(x=220, y=260)
+label_resultado_eixo.place(x=220, y=196)
 
-label_resultado = ctk.CTkLabel(app, text="Centro de Custo: ", font=("Arial", 14))
-label_resultado.place(x=10, y=320 )
+label_resultado = ctk.CTkLabel(app, text="Centro de Custo: ")
+label_resultado.place(x=10, y=222 )
 
-label_resultado3 = customtkinter.CTkLabel(app, text="Centro de Custo: ", font=("Arial", 14))
-label_resultado3.place(x=250, y=320)
+label_resultado3 = customtkinter.CTkLabel(app, text="Centro de Custo: ")
+label_resultado3.place(x=220, y=228)
 
 
 
