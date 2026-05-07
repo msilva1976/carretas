@@ -1146,7 +1146,8 @@ def carregar_dados():
     ptb = (cursor.fetchone())
 
 
-    dados_do_cavalo.configure(text="Placa: {}".format(resultado) + "   |    Nome: {}".format(nome) + "   |    Eixo: {}".format(eixo) + "   |    PTB: {}".format(ptb))
+    dados_do_cavalo.configure(text="Placa do cavalo: {}".format(resultado) + "   |   Eixo: {}".format(eixo[0]) + "   |    PTB: {}".format(ptb[0]))
+    nome_motorista.configure(text="Motorista: {}".format(nome))
 
 def carregar_carreta():
     frota_carreta = entry_frota_carreta.get()
@@ -1179,8 +1180,8 @@ def carregar_carreta():
     ptb2 = (cursor.fetchone())
 
 
-    dados_da_carreta.configure(text="Placa: {}".format(resultado2) + "   |    Capacidade: {}".format(capacidade) + "   |    Eixo: {}".format(eixo2) + "   |    PTB: {}".format(ptb2))
-     
+    dados_da_carreta.configure(text="Placa da carreta: {}".format(resultado2) + "   |    Eixo: {}".format(eixo2[0]) + "   |    PTB: {}".format(ptb2[0]))
+    capacidade_carreta.configure(text=f"Capacidade Geométrica: {capacidade[0]}") 
                               
 
     conexao.close()
@@ -1188,6 +1189,44 @@ def carregar_carreta():
 def comandoscombinados():
     carregar_dados()
     carregar_carreta()
+    calcular_soma_total()
+
+def calcular_soma_total():
+    try:
+        # 1. Conectar ao Banco de Dados 1
+        conn1 = sqlite3.connect('carretas.db')
+        cursor1 = conn1.cursor()
+        cursor1.execute("SELECT SUM(eixo) FROM carreta WHERE frota = ?", (entry_frota_carreta.get(),))
+        total1 = cursor1.fetchone()[0] or 0 # Retorna 0 se for NULL
+        conn1.close()
+
+        # 2. Conectar ao Banco de Dados 2
+        conn2 = sqlite3.connect('cavalo.db')
+        cursor2 = conn2.cursor()
+        cursor2.execute("SELECT SUM(eixo) FROM cavalo WHERE frota = ?", (entry_frota_cavalo.get(),))
+        total2 = cursor2.fetchone()[0] or 0
+        conn2.close()
+
+        # 3. Somar os dois
+        resultado_final = total1 + total2
+
+        # 4. Atualizar o label no customtkinter
+        label_resultado_eixo.configure(text=f"Quantidade de eixos: {resultado_final:.0f}")
+
+    except Exception as e:
+        label_resultado_eixo.configure(text="Erro")
+        print(f"Erro ao acessar banco: {e}")
+
+# --- Função de Callback ---
+def combobox_callback(choice):
+    # Atualiza o texto da label com a escolha atual
+    label_resultado.configure(text=f"Centro de Custo: {choice}")
+    print("Opção escolhida:", choice)
+
+# --- Criando o ComboBox ---
+combobox = ctk.CTkComboBox(app, values=["1005 DAC", "1201 CO"],command=combobox_callback )
+combobox.place(x=280 , y=9)
+combobox.set("Selecione...") # Define um valor inicial opcional
 
 #entrada da placa do cavalo
 label_frota_cavalo = customtkinter.CTkLabel(app, text="Frota do Cavalo")
@@ -1206,10 +1245,44 @@ entry_frota_carreta.place(x=110, y=60)
 
 #botão para carregar dados
 botao_carregar = customtkinter.CTkButton(app, text="Carregar Dados", command=comandoscombinados)
-#botao_carregar2 = customtkinter.CTkButton(app, text="Carregar Dados", command=carregar_carreta)
 botao_carregar.place(x=10, y=100)
-#botao_carregar2.place(x=110, y=100)
 
+
+
+def carregar_dados_banco():
+
+    try:
+        # Conecta ao banco de dados
+        conn = sqlite3.connect('industrial.db')
+        cursor = conn.cursor()
+        
+        # Seleciona os dados (ex: nomes de uma tabela 'clientes')
+        cursor.execute("SELECT filial FROM industria")
+        dados = cursor.fetchall() # Retorna uma lista de tuplas: [('Ana',), ('Pedro',)]
+        
+        # Converte lista de tuplas para lista plana: ['Ana', 'Pedro']
+        lista_final = [item[0] for item in dados]
+        
+        conn.close()
+        return lista_final
+    except Exception as e:
+        print(f"Erro ao buscar dados: {e}")
+        return []
+# Busca os dados e cria o ComboBox
+dados_combobox = carregar_dados_banco()
+def combobox_callback2  (choice):
+    # Atualiza o texto da label com a escolha atual
+    label_resultado3.configure(text=f"Centro de Custo: {choice}")
+    print("Opção escolhida:", choice)
+
+combobox = customtkinter.CTkComboBox(master=app,values=dados_combobox,width=200,command=combobox_callback2) # Chama a função ao selecionar
+combobox.place(x=280 , y=60)
+combobox.set("Destino...") # Define um valor inicial opcional
+# Define um valor padrão se houver dados
+if dados_combobox:
+    combobox.set(dados_combobox[0])
+
+# --- Criando a Label ---
 
 dados_do_cavalo = customtkinter.CTkLabel(app, text="")
 dados_do_cavalo.place(x=10, y=140)
@@ -1217,19 +1290,26 @@ dados_do_cavalo.place(x=10, y=140)
 dados_da_carreta = customtkinter.CTkLabel(app, text="")
 dados_da_carreta.place(x=10, y=180)
 
+nome_motorista = customtkinter.CTkLabel(app, text="")
+nome_motorista.place(x=10, y=220)
 
-def combobox_callback(choice):
-    centro_custo = choice
-    ver.configure(text="Centro de Custo: " + str(centro_custo))
-    ver = customtkinter.CTkLabel(app, text="")
-    ver.place(x=10, y=220)
-    messagebox.showinfo("Centro de Custo", f"Você selecionou: {centro_custo}")
-# 3. Criando o CTkComboBox
-combobox = ctk.CTkComboBox(master=app, values=["1005 DAC", "1201 CO"], command=combobox_callback, width=200)
-combobox.pack(pady=20)
+capacidade_carreta = customtkinter.CTkLabel(app, text="")
+capacidade_carreta.place(x=10, y=260)
 
-# Define um valor padrão
-combobox.set("1005 DAC")
+label_resultado_eixo = customtkinter.CTkLabel(app, text="")
+label_resultado_eixo.place(x=220, y=260)
 
-#janela.mainloop()
+label_resultado = ctk.CTkLabel(app, text="Centro de Custo: ", font=("Arial", 14))
+label_resultado.place(x=10, y=320 )
+
+label_resultado3 = customtkinter.CTkLabel(app, text="Centro de Custo: ", font=("Arial", 14))
+label_resultado3.place(x=250, y=320)
+
+
+
+
+
+
+
+
 app.mainloop()
