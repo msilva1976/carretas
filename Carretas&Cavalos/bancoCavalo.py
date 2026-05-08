@@ -12,5 +12,5 @@ con = sqlite3.connect('cavalo.db')
 
 with con:
     cur = con.cursor()  
-    cur.execute("CREATE TABLE cavalo(id INTEGER PRIMARY KEY AUTOINCREMENT, frota NUMERIC, placa TEXT, nome TEXT, eixo NUMERIC, ptb NUMERIC)")
+    cur.execute("CREATE TABLE cavalo(id INTEGER PRIMARY KEY AUTOINCREMENT,frota NUMERIC, placa TEXT, nome TEXT, eixo NUMERIC, ptb NUMERIC)")
     

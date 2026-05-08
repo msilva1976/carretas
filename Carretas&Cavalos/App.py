@@ -40,7 +40,7 @@ co14 = "#00C300"  # green
 app = Tk()
 #app = ctk.CTk()
 app.title("CopaEnergia")
-app.geometry("900x610")
+app.geometry("700x410")
 app.resizable(width=FALSE, height=FALSE)
 app.configure(background="#403d3d")
 
@@ -84,6 +84,7 @@ def cavalo():
                             columns=tabela_cavalos, show="headings")
 
         # tree.column
+        
         tree.column("Frota", width=50)
         tree.column("Placa", width=40)
         tree.column("Nome", width=160)
@@ -1148,7 +1149,6 @@ def carregar_dados():
 
     dados_do_cavalo.configure(text="Placa do cavalo: {}".format(resultado) + "   |   Eixo: {}".format(eixo[0]) + "   |    PTB: {}".format(ptb[0]))
     nome_motorista.configure(text="Motorista: {}".format(nome))
-
 def carregar_carreta():
     frota_carreta = entry_frota_carreta.get()
     conexao = sqlite3.connect("carretas.db")
@@ -1185,12 +1185,10 @@ def carregar_carreta():
                               
 
     conexao.close()
-
 def comandoscombinados():
     carregar_dados()
     carregar_carreta()
     calcular_soma_total()
-
 def calcular_soma_total():
     try:
         # 1. Conectar ao Banco de Dados 1
@@ -1216,17 +1214,43 @@ def calcular_soma_total():
     except Exception as e:
         label_resultado_eixo.configure(text="Erro")
         print(f"Erro ao acessar banco: {e}")
-
-# --- Função de Callback ---
 def combobox_callback(choice):
     # Atualiza o texto da label com a escolha atual
     label_resultado.configure(text=f"Centro de Custo: {choice}")
     print("Opção escolhida:", choice)
+def carregar_dados_banco():
+
+    try:
+        # Conecta ao banco de dados
+        conn = sqlite3.connect('industrial.db')
+        cursor = conn.cursor()
+        
+        # Seleciona os dados (ex: nomes de uma tabela 'clientes')
+        cursor.execute("SELECT filial FROM industria")
+        dados = cursor.fetchall() # Retorna uma lista de tuplas: [('Ana',), ('Pedro',)]
+        
+        # Converte lista de tuplas para lista plana: ['Ana', 'Pedro']
+        lista_final = [item[0] for item in dados]
+        
+        conn.close()
+        return lista_final
+    except Exception as e:
+        print(f"Erro ao buscar dados: {e}")
+        return []
+dados_combobox = carregar_dados_banco() # Busca os dados e cria o ComboBox
+def combobox_callback2  (choice):
+    # Atualiza o texto da label com a escolha atual
+    label_resultado3.configure(text=f"Centro de Custo: {choice}")
+    print("Opção escolhida:", choice)
+
+combobox = customtkinter.CTkComboBox(master=app,values=dados_combobox,width=200,command=combobox_callback2) # Chama a função ao selecionar
+combobox.place(x=280 , y=60)
+combobox.set("Destino...") # Define um valor inicial opcional
 
 # --- Criando o ComboBox ---
-combobox = ctk.CTkComboBox(app, values=["1005 DAC", "1201 CO"],command=combobox_callback )
+combobox = ctk.CTkComboBox(app, width=200,values=["1005 DAC", "1201 CO"],command=combobox_callback )
 combobox.place(x=280 , y=9)
-combobox.set("Selecione...") # Define um valor inicial opcional
+combobox.set("Centro de custo...") # Define um valor inicial opcional
 
 #entrada da placa do cavalo
 label_frota_cavalo = customtkinter.CTkLabel(app, text="Frota do Cavalo")
@@ -1249,38 +1273,7 @@ botao_carregar.place(x=10, y=100)
 
 
 
-def carregar_dados_banco():
 
-    try:
-        # Conecta ao banco de dados
-        conn = sqlite3.connect('industrial.db')
-        cursor = conn.cursor()
-        
-        # Seleciona os dados (ex: nomes de uma tabela 'clientes')
-        cursor.execute("SELECT filial FROM industria")
-        dados = cursor.fetchall() # Retorna uma lista de tuplas: [('Ana',), ('Pedro',)]
-        
-        # Converte lista de tuplas para lista plana: ['Ana', 'Pedro']
-        lista_final = [item[0] for item in dados]
-        
-        conn.close()
-        return lista_final
-    except Exception as e:
-        print(f"Erro ao buscar dados: {e}")
-        return []
-# Busca os dados e cria o ComboBox
-dados_combobox = carregar_dados_banco()
-def combobox_callback2  (choice):
-    # Atualiza o texto da label com a escolha atual
-    label_resultado3.configure(text=f"Centro de Custo: {choice}")
-    print("Opção escolhida:", choice)
-
-combobox = customtkinter.CTkComboBox(master=app,values=dados_combobox,width=200,command=combobox_callback2) # Chama a função ao selecionar
-combobox.place(x=280 , y=60)
-combobox.set("Destino...") # Define um valor inicial opcional
-# Define um valor padrão se houver dados
-if dados_combobox:
-    combobox.set(dados_combobox[0])
 
 # --- Criando a Label ---
 
